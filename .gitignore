@@ -1,0 +1,21 @@
+Python
+
+pycache/
+*.py[cod]
+*.pyd
+
+Virtual environments
+
+.venv/
+venv/
+env/
+
+PyCharm
+
+.idea/
+
+Generated training data and model files
+
+training_folder/
+*.pkl
+*.pickle
