@@ -65,13 +65,13 @@ class BoardGame:
                 return True
         return False
 
-    def check_win(self, col, row, symbol, print_game=False):
+    def check_win(self, print_game=False):
         if self.last_move is not None:
             col, row, symbol = self.last_move
-        if self.check_win_from(col, row, symbol):
-            if print_game:
-                self.print_board()
-            return symbol
+            if self.check_win_from(col, row, symbol):
+                if print_game:
+                    self.print_board()
+                return symbol
         if not self.get_valid_columns():
             if print_game:
                 self.print_board()
