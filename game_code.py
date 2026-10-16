@@ -183,10 +183,9 @@ class MainMenuState(State):
 
     def handle_input(self, event):
         result = self.renderer.handle_event(event)
-        self.game.set_player_type([
-            PlayerType.USER,
-            PlayerType.COMPUTER
-        ])
+        if result is None:
+            return None
+        self.game.set_player_type([PlayerType.USER, PlayerType.COMPUTER])
         if result == "random":
             self.game.starter = randint(0, 1)
             self.input_state = InputState.MAIN_MENU_STYLE
@@ -198,6 +197,7 @@ class MainMenuState(State):
         elif result == "player_goes_second":
             self.game.starter = 1
             self.input_state = InputState.MAIN_MENU_STYLE
+        return None
 
     def update(self):
         if self.input_state == InputState.MAIN_MENU_STYLE:
