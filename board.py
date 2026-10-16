@@ -59,7 +59,7 @@ class BoardGame:
             if print_game:
                 self.print_board()
                 print("DRAW")
-            return "Draw"
+            return GameResult.DRAW
         return None
 
     def can_play_column(self, col):

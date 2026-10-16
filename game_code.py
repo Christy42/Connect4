@@ -314,7 +314,7 @@ class Game:
                 )
                 print("Player 2 wins!")
 
-            else:
+            elif self.state.winner == GameResult.DRAW:
                 statement = "Draw!"
                 print("Draw!")
 

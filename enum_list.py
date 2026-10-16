@@ -20,6 +20,9 @@ class SquareState(Enum):
     YELLOW = auto()
     Empty = auto()
 
+class GameResult(Enum):
+    DRAW = auto()
+
 
 class PlayerType(Enum):
     USER = auto()
