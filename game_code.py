@@ -1,4 +1,5 @@
 import pygame
+import logging
 from random import randint
 import pickle
 
@@ -11,6 +12,7 @@ from board import BoardGame
 # probably let this live elsewhere at some point
 folder = "C:\\Users\\Admin\\PycharmProjects\\xs_and_os\\training_folder\\"
 q_table_file = folder + "q_table.okl"
+logger = logging.getLogger(__name__)
 
 def save_q_table(q_table_values, filename):
     with open(filename, "wb") as file:
@@ -86,10 +88,9 @@ class BoardState(State):
     def computer_turn(self):
 
         player = self.game.players[self.turn]
-        print(type(player))
-        print("Makes a move")
+        logger.debug("Computer player %s choosing a move", type(player).__name__)
         move = player.choose_move(self.board)
-
+        logger.debug("Chose column %s", move)
         if move is not None:
             return self.board.make_move(
                 move,

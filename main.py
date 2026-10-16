@@ -1,6 +1,8 @@
+import pygame
+import logging
+
 import game_code
 from universal_names import *
-import pygame
 # --------------------
 # Start Game
 # --------------------
@@ -11,6 +13,10 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 running = True
 
+# While developing: show everything
+logging.basicConfig(level=logging.DEBUG, format="%(levelname)s %(name)s: %(message)s")
+# When training: only show warnings and errors, so debug messages are hidden
+# logging.basicConfig(level=logging.WARNING)
 
 game = game_code.Game()
 
