@@ -32,10 +32,12 @@ def build_winning_lines():
 
 class BoardGame:
     winning_combo = build_winning_lines()
+
     def __init__(self):
         self.squares = {(x, y): Square(x, y)
                         for x in range(1, COLUMNS + 1)
                         for y in range(1, ROWS + 1)}
+        self.last_move = None # (col, row, symbol) of the last move made, for win-checking optimization
 
     def update_column(self, col, new_state):
         """Drop a disc into a column. It falls to the LOWEST empty row (gravity)."""
@@ -43,22 +45,36 @@ class BoardGame:
         for row in range(ROWS, 0, -1):
             if self.squares[(col, row)].symbol == SquareState.Empty:
                 self.squares[(col, row)].change_state(new_state)
-                return True
+                self.last_move = (col, row, new_state) # remember where last move landed
+                return row # will return true
         return False  # column is full
 
-    def check_win(self, print_game=False):
-        for match in self.winning_combo:
-            states = [self.squares[coord].symbol for coord in match]
-            if all(state == states[0] and state != SquareState.Empty for state in states):
-                if print_game:
-                    self.print_board()
-                    print("Winning combination:", match)
-                    print("Winner:", states[0])
-                return states[0]
+    def check_win_from(self, col, row, symbol):
+        """Only the lines through the last-placed disc can have just become a win."""
+        for dx, dy in [(1, 0), (0, 1), (1, 1), (-1, 1)]:
+            count = 1
+            # Count in both directions along this axis
+            for sign in (1, -1):
+                x, y = col + sign * dx, row + sign * dy
+                while (1 <= x <= COLUMNS and 1 <= y <= ROWS
+                       and self.squares[(x, y)].symbol == symbol):
+                    count += 1
+                    x += sign * dx
+                    y += sign * dy
+            if count >= 4:
+                return True
+        return False
+
+    def check_win(self, col, row, symbol, print_game=False):
+        if self.last_move is not None:
+            col, row, symbol = self.last_move
+        if self.check_win_from(col, row, symbol):
+            if print_game:
+                self.print_board()
+            return symbol
         if not self.get_valid_columns():
             if print_game:
                 self.print_board()
-                print("DRAW")
             return GameResult.DRAW
         return None
 
@@ -87,6 +103,7 @@ class BoardGame:
     def reset(self):
         for square in self.squares.values():
             square.symbol = SquareState.Empty
+        self.last_move = None # to avoid a move from a previous game getting checked
 
     def print_board(self):
         print("\nFinal board:")
