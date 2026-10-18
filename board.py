@@ -1,4 +1,5 @@
 from enum_list import *
+import numpy as np
 
 # Connect 4 dimensions
 COLUMNS = 7
@@ -39,6 +40,18 @@ class BoardGame:
                         for y in range(1, ROWS + 1)}
         self.last_move = None # (col, row, symbol) of the last move made, for win-checking optimization
         self.move_history = []  # every (col, row, symbol) played, in order
+
+    def to_array(self, perspective):
+        """board as a ROWS x COLUMNS array from one player's point of view.
+        +1 = a disc belonging to `perspective`, -1 = the opponent's disc, 0 = empty.
+        Row 0 is the TOP row, matching how the board is drawn."""
+        arr = np.zeros((ROWS, COLUMNS), dtype=np.int8)
+        for (x, y), square in self.squares.items():
+            if square.symbol == SquareState.Empty:
+                continue
+            # x and y are 1-based, array indices are 0-based
+            arr[y - 1, x - 1] = 1 if square.symbol == perspective else -1
+        return arr
 
     def update_column(self, col, new_state):
         """Drop a disc into a column. It falls to the LOWEST empty row (gravity)."""
