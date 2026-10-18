@@ -38,6 +38,7 @@ class BoardGame:
                         for x in range(1, COLUMNS + 1)
                         for y in range(1, ROWS + 1)}
         self.last_move = None # (col, row, symbol) of the last move made, for win-checking optimization
+        self.move_history = []  # every (col, row, symbol) played, in order
 
     def update_column(self, col, new_state):
         """Drop a disc into a column. It falls to the LOWEST empty row (gravity)."""
@@ -46,8 +47,28 @@ class BoardGame:
             if self.squares[(col, row)].symbol == SquareState.Empty:
                 self.squares[(col, row)].change_state(new_state)
                 self.last_move = (col, row, new_state) # remember where last move landed
+                self.move_history.append(self.last_move) # record history
                 return row # will return true
         return False  # column is full
+
+    def undo_move(self):
+        """ take back the most recent move (exact reverse of update_column)."""
+        if not self.move_history:
+            return
+        col, row, _ = self.move_history.pop()
+        # Set directly: change_state() deliberately refuses to overwrite a disc
+        self.squares[(col, row)].symbol = SquareState.Empty
+        # Restore last_move to the move before, so check_win() stays correct
+        self.last_move = self.move_history[-1] if self.move_history else None
+
+    def would_win(self, col, symbol):
+        """would dropping `symbol` in `col` win immediately? Board is left unchanged."""
+        row = self.update_column(col, symbol)
+        if not row:  # column was full
+            return False
+        won = self.check_win_from(col, row, symbol)
+        self.undo_move()          # put everything back exactly as it was
+        return won
 
     def check_win_from(self, col, row, symbol):
         """Only the lines through the last-placed disc can have just become a win."""
@@ -104,6 +125,7 @@ class BoardGame:
         for square in self.squares.values():
             square.symbol = SquareState.Empty
         self.last_move = None # to avoid a move from a previous game getting checked
+        self.move_history = [] # reset history
 
     def print_board(self):
         print("\nFinal board:")
