@@ -14,7 +14,7 @@ def play_game(player_red, player_yellow):
         if result is not None:
             return result           # no pygame involved at all
         turn = 1 - turn
-        
+
 
 def evaluate(make_player_a, make_player_b, games=200):
     """Play many headless games and report results from player A's point of view.
